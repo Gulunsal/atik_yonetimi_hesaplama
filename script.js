@@ -1,29 +1,16 @@
 let calculationHistory = [];
 let chart; // Chart.js grafiğini tutacak değişken
 
-// Atık türlerine göre veri setleri
-let wasteDataSets = {
-    "Organik Atık": {
-        label: "Organik Atık",
-        data: [],
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)'
-    },
-    "Plastik": {
-        label: "Plastik",
-        data: [],
-        backgroundColor: 'rgba(255, 99, 132, 0.2)',
-        borderColor: 'rgba(255, 99, 132, 1)'
-    },
-    "Kağıt": {
-        label: "Kağıt",
-        data: [],
-        backgroundColor: 'rgba(54, 162, 235, 0.2)',
-        borderColor: 'rgba(54, 162, 235, 1)'
-    }
+// Aylık toplam emisyonları atık türlerine göre ayırmak için
+let monthlyTotalsByWasteType = {
+    "Organik Atık": { "Ocak": 0, "Şubat": 0, "Mart": 0, "Nisan": 0, "Mayıs": 0, "Haziran": 0,
+        "Temmuz": 0, "Ağustos": 0, "Eylül": 0, "Ekim": 0, "Kasım": 0, "Aralık": 0 },
+    "Plastik": { "Ocak": 0, "Şubat": 0, "Mart": 0, "Nisan": 0, "Mayıs": 0, "Haziran": 0,
+        "Temmuz": 0, "Ağustos": 0, "Eylül": 0, "Ekim": 0, "Kasım": 0, "Aralık": 0 },
+    "Kağıt": { "Ocak": 0, "Şubat": 0, "Mart": 0, "Nisan": 0, "Mayıs": 0, "Haziran": 0,
+        "Temmuz": 0, "Ağustos": 0, "Eylül": 0, "Ekim": 0, "Kasım": 0, "Aralık": 0 }
 };
 
-// Ay isimlerini almak için bir liste
 const monthNames = ["Ocak", "Şubat", "Mart", "Nisan", "Mayıs", "Haziran",
   "Temmuz", "Ağustos", "Eylül", "Ekim", "Kasım", "Aralık"];
 
@@ -54,7 +41,7 @@ function calculateEmissions() {
     // Tarih ve ay bilgisi almak için JavaScript Date nesnesini kullanıyoruz
     let currentDate = new Date();
     let currentMonth = monthNames[currentDate.getMonth()]; // Mevcut ay ismi
-    
+
     // Hesaplama geçmişine ekleme
     calculationHistory.push({
         wasteType: wasteType,
@@ -64,8 +51,8 @@ function calculateEmissions() {
         month: currentMonth // Hesaplama için ay bilgisi ekleme
     });
 
-    // Atık türüne göre emisyon verisini ilgili veri setine ekleme
-    wasteDataSets[wasteType].data.push(emissions.toFixed(2));
+    // Atık türüne göre aylık toplamları biriktirme
+    monthlyTotalsByWasteType[wasteType][currentMonth] += parseFloat(emissions);
 
     // Sonucun gösterimi
     document.getElementById("result").textContent = "Tahmini Emisyon: " + emissions.toFixed(2) + " kg CO2";
@@ -103,10 +90,13 @@ function resetForm() {
 }
 
 function updateChart() {
-    // Hesaplama geçmişindeki ayları etiket olarak kullanıyoruz
-    let labels = calculationHistory.map(function(entry) {
-        return entry.month; // Ay bilgilerini etiket olarak kullanıyoruz
-    });
+    // Her atık türü için aylık verileri ayrı ayrı topluyoruz
+    let months = Object.keys(monthlyTotalsByWasteType["Organik Atık"]);  // Ay isimleri
+
+    // Her atık türü için aylık toplamlar
+    let organikAtikData = Object.values(monthlyTotalsByWasteType["Organik Atık"]);
+    let plastikData = Object.values(monthlyTotalsByWasteType["Plastik"]);
+    let kagitData = Object.values(monthlyTotalsByWasteType["Kağıt"]);
 
     let ctx = document.getElementById('emissionChart').getContext('2d');
 
@@ -117,8 +107,30 @@ function updateChart() {
     chart = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: labels, // Ay bilgilerini grafik etiketlerine ekliyoruz
-            datasets: [wasteDataSets["Organik Atık"], wasteDataSets["Plastik"], wasteDataSets["Kağıt"]]
+            labels: months, // Aylık isimleri grafik etiketlerine ekliyoruz
+            datasets: [
+                {
+                    label: 'Organik Atık (kg CO2)',
+                    data: organikAtikData,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Plastik (kg CO2)',
+                    data: plastikData,
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1
+                },
+                {
+                    label: 'Kağıt (kg CO2)',
+                    data: kagitData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1
+                }
+            ]
         },
         options: {
             animation: {
