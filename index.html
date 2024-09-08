@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="tr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atık Yönetimi Emisyon Hesaplayıcı</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Chart.js kütüphanesini ekliyoruz -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Atık Yönetimi Emisyon Hesaplayıcı</h2>
+
+        <label for="waste-type">Atık Türü:</label>
+        <select id="waste-type">
+            <option value="400">Organik Atık</option>
+            <option value="600">Plastik</option>
+            <option value="300">Kağıt</option>
+        </select>
+
+        <label for="disposal-method">Bertaraf Yöntemi:</label>
+        <select id="disposal-method">
+            <option value="1">Düzenli Depolama</option>
+            <option value="0.9">Yakma</option>
+            <option value="0.1">Geri Dönüşüm</option>
+        </select>
+
+        <label for="waste-amount">Atık Miktarı (ton):</label>
+        <input type="number" id="waste-amount" placeholder="Atık miktarını girin">
+
+        <div class="error-message" id="error-message"></div>
+
+        <button onclick="calculateEmissions()">Emisyon Hesapla</button>
+        <button onclick="resetForm()">Temizle</button>
+
+        <div class="result" id="result"></div>
+        <div class="history" id="history"></div>
+
+        <!-- Grafik göstermek için bir canvas elemanı -->
+        <canvas id="emissionChart" width="400" height="200"></canvas>
+    </div>
+
+    <!-- JS dosyasını dahil etme -->
+    <script src="script.js"></script>
+
+</body>
+
+</html>
